@@ -1,0 +1,3 @@
+interface IWebsite {
+    name: string
+}

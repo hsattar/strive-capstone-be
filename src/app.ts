@@ -3,6 +3,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import mongoose from 'mongoose'
 import { errorHandlers } from './middleware/errorHandlers'
+import userRouter from './routes/users'
 
 const app = express()
 
@@ -26,6 +27,7 @@ app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
 
+app.use('/users', userRouter)
 
 app.use(errorHandlers)
 
