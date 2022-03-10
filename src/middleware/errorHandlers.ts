@@ -5,6 +5,8 @@ export const errorHandlers: ErrorRequestHandler = (err, req, res, next) => {
     switch (err.name) {
         case 'ValidationError':
         case 'BadRequestError':
+        case 'MongoServerError':
+        case 'SyntaxError':
             return res.status(400).send(err)
         case 'UnauthorizedError':
         case 'JsonWebTokenError':
