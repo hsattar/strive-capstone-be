@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev -r dotenv/config ./src",
+    "dev": "ts-node-dev -r dotenv/config ./src/app.ts",
     "start": "node ./build"
   },
   "keywords": [],
