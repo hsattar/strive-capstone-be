@@ -5,19 +5,20 @@ import createHttpError from 'http-errors'
 import { createNewTokens, verifyTokenAndRegenrate } from '../utils/jwt'
 import { checkValidationErrors } from '../middleware/errorHandlers'
 import { authenticateUser } from '../middleware/authentication'
+import { IUserRequest } from '../types-local/users'
 
 const userRouter = Router()
 
 const { NODE_ENV } = process.env
 
-userRouter.get('/me', accessTokenValidation, authenticateUser, async (req: any, res: Response, next: NextFunction) => {
-        // FIXME: USING ANY FOR REQUEST
-        try {
-            const me = await UserModel.findById(req.user._id)
-            res.send(me)
-        } catch (error) {
-            next(error)
-        }
+userRouter.get('/me', accessTokenValidation, authenticateUser, async (req: IUserRequest, res: Response, next: NextFunction) => {
+    try {
+        if (!req.user) return next(createHttpError(400, 'No User'))
+        const me = await UserModel.findById(req.user._id)
+        res.send(me)
+    } catch (error) {
+        next(error)
+    }
 })
 
 userRouter.post('/register', userRegistrationValidation, async (req: Request, res: Response, next: NextFunction) => {

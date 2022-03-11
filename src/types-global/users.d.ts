@@ -8,3 +8,7 @@ interface IUser {
     websites: IWebsite[]
     refreshToken?: string
 }
+
+interface IPayload {
+    _id: string
+}

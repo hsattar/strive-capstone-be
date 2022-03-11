@@ -6,9 +6,6 @@ import { IUserDoc } from '../types-local/users'
 const { JWT_ACCESS_KEY: ACCESS_KEY, JWT_REFRESH_KEY: REFRESH_KEY } = process.env
 if (!ACCESS_KEY || !REFRESH_KEY) throw new Error('Provide ACCESS KEY AND REFRESH KEY')
 
-interface IPayload {
-    _id: string
-}
 
 export const createNewTokens = async (user: IUserDoc) => {
     try {
