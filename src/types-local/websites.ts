@@ -5,7 +5,8 @@ export interface IWebsite {
     owner: Types.ObjectId
     name: string
     page: string
-    namePage: string
+    stage: 'devlopment' | 'production'
+    namePageStage: string
     code: string
     structure: IWebsiteStructure
     createdAt: Date
