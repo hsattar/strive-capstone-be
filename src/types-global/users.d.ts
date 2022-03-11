@@ -5,7 +5,7 @@ interface IUser {
     avatar: string
     email: string
     password: string
-    websites: IWebsite[]
+    websites: string[]
     refreshToken?: string
 }
 

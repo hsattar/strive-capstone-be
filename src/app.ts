@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser'
 import mongoose from 'mongoose'
 import { errorHandlers } from './middleware/errorHandlers'
 import userRouter from './routes/users'
+import websiteRouter from './routes/websites'
+import { authenticateUser } from './middleware/authentication'
 
 const app = express()
 
@@ -28,6 +30,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.use('/users', userRouter)
+app.use('/websites', authenticateUser, websiteRouter)
 
 app.use(errorHandlers)
 
