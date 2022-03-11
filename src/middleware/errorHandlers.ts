@@ -1,4 +1,12 @@
+import { Request } from 'express'
+import { validationResult } from 'express-validator'
+import createHttpError from 'http-errors'
 import { ErrorRequestHandler } from "express"
+
+export const checkValidationErrors = (request: Request) => {
+    const errors = validationResult(request)
+    if (!errors.isEmpty()) throw createHttpError(400, errors)
+}
 
 export const errorHandlers: ErrorRequestHandler = (err, req, res, next) => {
     console.log('THE ERROR', err)

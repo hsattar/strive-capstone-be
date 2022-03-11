@@ -47,3 +47,23 @@ export const userLoginValidation = checkSchema({
         }
     }
 })
+
+export const userRefreshTokenValidation = checkSchema({
+    refreshToken: {
+        in: ['cookies'],
+        isLength: {
+            options: { min: 1 },
+            errorMessage: 'refreshToken Required'
+        }
+    }
+})
+
+export const accessTokenValidation = checkSchema({
+    accessToken: {
+        in: ['cookies'],
+        isLength: {
+            options: { min: 1 },
+            errorMessage: 'refreshToken Required'
+        }
+    }
+})

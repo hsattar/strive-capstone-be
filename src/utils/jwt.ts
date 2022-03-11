@@ -29,7 +29,7 @@ jwt.sign(payload, secret, { expiresIn }, (err, token) => {
     resolve(token as string)
 }))
 
-const verifyJwtToken = (token: string, secret: string): Promise<IPayload> => new Promise((resolve, reject) =>
+export const verifyJwtToken = (token: string, secret: string): Promise<IPayload> => new Promise((resolve, reject) =>
 jwt.verify(token, secret, (err, payload) => {
     if (err) return reject(err)
     resolve(payload as IPayload)

@@ -1,18 +1,28 @@
 import { NextFunction, Request, Response, Router } from 'express'
-import { userLoginValidation, userRegistrationValidation } from '../middleware/validation'
+import { accessTokenValidation, userLoginValidation, userRefreshTokenValidation, userRegistrationValidation } from '../middleware/userValidation'
 import UserModel from '../models/UserSchema'
-import { validationResult } from 'express-validator'
 import createHttpError from 'http-errors'
-import { createNewTokens } from '../utils/jwt'
+import { createNewTokens, verifyTokenAndRegenrate } from '../utils/jwt'
+import { checkValidationErrors } from '../middleware/errorHandlers'
+import { authenticateUser } from '../middleware/authentication'
 
 const userRouter = Router()
 
 const { NODE_ENV } = process.env
 
+userRouter.get('/me', accessTokenValidation, authenticateUser, async (req: any, res: Response, next: NextFunction) => {
+        // FIXME: USING ANY FOR REQUEST
+        try {
+            const me = await UserModel.findById(req.user._id)
+            res.send(me)
+        } catch (error) {
+            next(error)
+        }
+})
+
 userRouter.post('/register', userRegistrationValidation, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) return next(createHttpError(400, errors))
+        checkValidationErrors(req)
         const user = new UserModel(req.body)
         await user.save()
         const { accessToken, refreshToken } = await createNewTokens(user)
@@ -26,8 +36,7 @@ userRouter.post('/register', userRegistrationValidation, async (req: Request, re
 
 userRouter.post('/login', userLoginValidation, async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const errors = validationResult(req)
-        if (!errors.isEmpty()) return next(createHttpError(400, errors))
+        checkValidationErrors(req)
         const { email, password } = req.body
         const user = await UserModel.authenticate(email, password)
         if (!user) return next(createHttpError(401, 'Invalid Credentials'))
@@ -35,6 +44,19 @@ userRouter.post('/login', userLoginValidation, async (req: Request, res: Respons
         res.cookie('accessToken', accessToken, { httpOnly: true, secure: NODE_ENV === "production" ? true : false, sameSite: NODE_ENV === "production" ? "none" : undefined })
         res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: NODE_ENV === "production" ? true : false, sameSite: NODE_ENV === "production" ? "none" : undefined })
         res.send(user)
+    } catch (error) {
+        next(error)
+    }
+})
+
+userRouter.post('/refresh-token', userRefreshTokenValidation, async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        checkValidationErrors(req)
+        const { refreshToken: oldRefreshToken } = req.cookies
+        const { accessToken, refreshToken } = await verifyTokenAndRegenrate(oldRefreshToken)
+        res.cookie('accessToken', accessToken, { httpOnly: true, secure: NODE_ENV === "production" ? true : false, sameSite: NODE_ENV === "production" ? "none" : undefined })
+        res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: NODE_ENV === "production" ? true : false, sameSite: NODE_ENV === "production" ? "none" : undefined })
+        res.send('Tokens Sent')
     } catch (error) {
         next(error)
     }
