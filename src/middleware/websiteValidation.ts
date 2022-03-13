@@ -23,3 +23,13 @@ export const createWebsiteValidation = checkSchema({
         },
     }
 })
+
+export const saveWebsiteValidation = checkSchema({
+    code: { 
+        in: ['body'],
+        isLength: {
+            options: { min: 1 },
+            errorMessage: 'code required'
+        }
+    }
+})
