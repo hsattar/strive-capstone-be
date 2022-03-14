@@ -6,6 +6,7 @@ import { errorHandlers } from './middleware/errorHandlers'
 import userRouter from './routes/users'
 import websiteRouter from './routes/websites'
 import { authenticateUser } from './middleware/authentication'
+import publicRouter from './routes/public'
 
 const app = express()
 
@@ -25,11 +26,12 @@ const corsOptions = {
     credentials: true
 }
 
-app.use(cors(corsOptions))
 app.use(express.json())
 app.use(cookieParser())
+app.use(cors(corsOptions))
 
 app.use('/users', userRouter)
+app.use('/public', publicRouter)
 app.use('/websites', authenticateUser, websiteRouter)
 
 app.use(errorHandlers)

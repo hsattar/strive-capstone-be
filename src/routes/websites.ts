@@ -45,7 +45,7 @@ websiteRouter.route('/:websiteName')
 .get(async (req: IUserRequest, res: Response, next: NextFunction) => {
     try {
         const { websiteName: name } = req.params
-        const websites = await WebsiteModel.find({ name, owner: req.user?._id }, { page: 1, _id: 0 })
+        const websites = await WebsiteModel.find({ name, stage: 'development', owner: req.user?._id }, { page: 1, _id: 0 })
         if (websites.length === 0) return next(createHttpError(404, `Couldn't find the website`))
         const websitePages = websites.map(website => website.page)
         res.send(websitePages)
@@ -118,8 +118,8 @@ websiteRouter.route('/:websiteName/:websitePage/:websiteStage')
 websiteRouter.route('/:websiteName/:websitePage/:websiteStage/code')
 .get(async (req: IUserRequest, res: Response, next: NextFunction) => {
     try {
-        const { websiteName: name, websitePage: page, websiteStage: stage } = req.params
-        const website = await WebsiteModel.findOne({ name, page, stage, owner: req.user?._id }, { code: 1, _id: 0 })
+        const { websiteName: name, websitePage: page } = req.params
+        const website = await WebsiteModel.findOne({ name, page, stage: 'development', owner: req.user?._id}, { code: 1, _id: 0 })
         if (!website) return res.send('<div class="flex justify-center"><h2 class="mt-12 text-3xl">Website Does Not Exist</h2></div>')
         res.send(website.code)
     } catch (error) {
