@@ -1,25 +1,18 @@
-interface IWebsiteStructure {
-    containers: IContainer[]
-    elements: IElement[]
-    containerOrder: string[]
+interface ICodeBlock {
+    id: string
+    name: string
+    code: IElement[]
 }
 
-interface IContainerElement {
+interface IElement {
+    name: string
     id?: string
-    openingTag: string
-    class: string
-    closingTag: string
-}
-
-interface IContainer extends IContainerElement {
-    children: string[]
-}
-
-interface IElement extends IContainerElement {
+    tag: string
+    className: string
     height?: string
     width?: string
     font?: string
-    fontSize?: string
+    textSize?: string
     bold?: string
     italics?: string
     underline?: string

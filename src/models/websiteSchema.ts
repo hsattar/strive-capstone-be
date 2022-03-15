@@ -1,23 +1,15 @@
 import { Schema, model } from 'mongoose'
 import { IWebsite } from '../types-local/websites'
 
-const containerStructureSchema = new Schema<IContainer>({
+const elementSchema = new Schema<IElement>({
     id: { type: String, required: true },
-    openingTag: { type: String, required: true },
-    class: { type: String, required: true },
-    closingTag: { type: String, required: true },
-    children: [String]
-})
-
-const elementStructureSchema = new Schema<IElement>({
-    id: { type: String, required: true },
-    openingTag: { type: String, required: true },
-    class: { type: String, required: true },
-    closingTag: { type: String, required: true },
+    name: String,
+    tag: String,
+    className: String,
     height: String,
     width: String,
     font: String,
-    fontSize: String,
+    textSize: String,
     bold: String,
     italics: String,
     underline: String,
@@ -31,10 +23,10 @@ const elementStructureSchema = new Schema<IElement>({
     text: String,
 })
 
-const WebsiteStructureSchema = new Schema<IWebsiteStructure>({
-    containers: [containerStructureSchema],
-    elements: [elementStructureSchema],
-    containerOrder: [{ type: String, default: `123456789` }]
+const codeBlocksSchema = new Schema<ICodeBlock>({
+    id: { type: String, required: true },
+    name: { type: String, required: true },
+    code: [elementSchema]
 })
 
 const WebsiteSchema = new Schema<IWebsite>({
@@ -43,8 +35,8 @@ const WebsiteSchema = new Schema<IWebsite>({
     page: { type: String, required: true },
     stage: { type: String, enum: ['development', 'production'], required: true },
     namePageStage: { type: String, default: function() { return `${this.name}${this.page}${this.stage}` }, unique: true },
-    code: { type: String, default: `<div class="123456789"></div>` },
-    structure: WebsiteStructureSchema
+    code: { type: String, default: `` },
+    codeBlocks: codeBlocksSchema
 }, { timestamps: true })
 
 const WebsiteModel = model<IWebsite>('Website', WebsiteSchema)

@@ -8,7 +8,7 @@ export interface IWebsite {
     stage: 'devlopment' | 'production'
     namePageStage: string
     code: string
-    structure: IWebsiteStructure
+    codeBlocks: ICodeBlock
     createdAt: Date
     updatedAt: Date
 }

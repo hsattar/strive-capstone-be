@@ -11,6 +11,7 @@ const websiteRouter = Router()
 
 websiteRouter.route('/')
 .get(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // GET ALL USERS WEBSITES TO DISPLAY ON THE HOME PAGE 
     try {
         const websites = await WebsiteModel.find({ owner: req.user?._id, page: 'home', stage: 'development' })
         res.send(websites)
@@ -19,6 +20,7 @@ websiteRouter.route('/')
     }
 })
 .post(createWebsiteValidation, async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // ADD NEW WEBSITE
     try {
         checkValidationErrors(req)
         const website = new WebsiteModel({ ...req.body, owner: req.user?._id })
@@ -33,6 +35,7 @@ websiteRouter.route('/')
 })
 
 websiteRouter.post('/upload-image', parser.single('image'),  async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // IMAGE UPLOAD TO CLOUDINARY
     try {
         if (!req.file?.path) return next(createHttpError(400, 'File Not Uploaded'))
         res.status(201).send(req.file.path)
@@ -43,6 +46,7 @@ websiteRouter.post('/upload-image', parser.single('image'),  async (req: IUserRe
 
 websiteRouter.route('/:websiteName')
 .get(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // SEND THE LIST OG WEBSITE PAGES FOR CURRENT WEBSITE USER IS EDITING TO DISPLAY IN SIDEBAR
     try {
         const { websiteName: name } = req.params
         const websites = await WebsiteModel.find({ name, stage: 'development', owner: req.user?._id }, { page: 1, _id: 0 })
@@ -54,6 +58,7 @@ websiteRouter.route('/:websiteName')
     }
 })
 .delete(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // DELETE A WEBSITE => ALL PAGES FROM DEVELOPMENT & PRODUCTION
     try {
         const { websiteName: name } = req.params
         const websites = await WebsiteModel.find({ name, owner: req.user?._id})
@@ -70,6 +75,7 @@ websiteRouter.route('/:websiteName')
 
 websiteRouter.route('/:websiteName/:websitePage')
 .delete(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // DELETE A SPECIFIC WEBSITE PAGE FROM BOTH DEV & PRODUCTION
     try {
         const { websiteName: name, websitePage: page } = req.params
         const websites = await WebsiteModel.find({ name, page, owner: req.user?._id })
@@ -86,9 +92,10 @@ websiteRouter.route('/:websiteName/:websitePage')
 
 websiteRouter.route('/:websiteName/:websitePage/:websiteStage')
 .get(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // GET THE CODE FOR THE DEVELOPMENT STAGE
     try {
         const { websiteName: name, websitePage: page, websiteStage: stage } = req.params
-        const website = await WebsiteModel.findOne({ name, page, stage, owner: req.user?._id })
+        const website = await WebsiteModel.findOne({ name, page, stage: 'development', owner: req.user?._id })
         if (!website) return next(createHttpError(404, 'Website Not Found'))
         res.send(website)
     } catch (error) {
@@ -96,20 +103,14 @@ websiteRouter.route('/:websiteName/:websitePage/:websiteStage')
     }
 })
 .put(saveWebsiteValidation, async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // UPDATE THE CODE FOR DEVELOPMENT STAGE
     try {
         checkValidationErrors(req)
         const { websiteName: name, websitePage: page, websiteStage: stage } = req.params
-        const { code, structure } =req.body
-        const website = await WebsiteModel.findOneAndUpdate({ name, page, stage, owner: req.user?._id }, { code, structure })
+        const { code, codeBlocks } =req.body
+        const website = await WebsiteModel.findOneAndUpdate({ name, page, stage: 'development', owner: req.user?._id }, { code, codeBlocks })
         if (!website) return next(createHttpError(404, 'Website Not Found'))
         res.send(website)
-    } catch (error) {
-        next(error)
-    }
-})
-.delete(async (req: IUserRequest, res: Response, next: NextFunction) => {
-    try {
-        
     } catch (error) {
         next(error)
     }
@@ -117,6 +118,7 @@ websiteRouter.route('/:websiteName/:websitePage/:websiteStage')
 
 websiteRouter.route('/:websiteName/:websitePage/:websiteStage/code')
 .get(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // GET THE WEBSITE CODE FOR THE PREVIEW PAGE OR SEND A CUSTOM 404 MESSAGE
     try {
         const { websiteName: name, websitePage: page } = req.params
         const website = await WebsiteModel.findOne({ name, page, stage: 'development', owner: req.user?._id}, { code: 1, _id: 0 })
@@ -129,11 +131,12 @@ websiteRouter.route('/:websiteName/:websitePage/:websiteStage/code')
 
 websiteRouter.route('/:websiteName/:websitePage/:websiteStage/publish')
 .put(saveWebsiteValidation, async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // CREATE OR UPDATE THE PRODUCTIION WEBSITE
     try {
         checkValidationErrors(req)
         const { websiteName: name, websitePage: page, websiteStage: stage } = req.params
         const { code } =req.body
-        const website = await WebsiteModel.findOneAndUpdate({ name, page, stage, owner: req.user?._id }, { code })
+        const website = await WebsiteModel.findOneAndUpdate({ name, page, stage: 'production', owner: req.user?._id }, { code })
         if (!website) {
             const newWebsite = new WebsiteModel({ owner: req.user?._id, name, page, stage, code })
             await newWebsite.save()
