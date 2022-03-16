@@ -7,6 +7,7 @@ import userRouter from './routes/users'
 import websiteRouter from './routes/websites'
 import { authenticateUser } from './middleware/authentication'
 import publicRouter from './routes/public'
+import imageRouter from './routes/images'
 
 const app = express()
 
@@ -32,6 +33,7 @@ app.use(cors(corsOptions))
 
 app.use('/users', userRouter)
 app.use('/public', publicRouter)
+app.use('/images', authenticateUser, imageRouter)
 app.use('/websites', authenticateUser, websiteRouter)
 
 app.use(errorHandlers)

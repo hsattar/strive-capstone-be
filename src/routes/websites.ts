@@ -1,11 +1,10 @@
 import { NextFunction, Response, Router } from 'express'
-import { IUserRequest } from '../types-local/users'
-import WebsiteModel from '../models/websiteSchema'
-import UserModel from '../models/UserSchema'
-import { createWebsiteValidation, saveWebsiteValidation } from '../middleware/websiteValidation'
-import { checkValidationErrors } from '../middleware/errorHandlers'
 import createHttpError from 'http-errors'
-import { parser } from '../utils/cloudinary'
+import { checkValidationErrors } from '../middleware/errorHandlers'
+import { createWebsiteValidation, saveWebsiteValidation } from '../middleware/websiteValidation'
+import UserModel from '../models/UserSchema'
+import WebsiteModel from '../models/websiteSchema'
+import { IUserRequest } from '../types-local/users'
 
 const websiteRouter = Router()
 
@@ -31,16 +30,6 @@ websiteRouter.route('/')
         res.status(201).send(website)
     } catch (error) {
         next(error)
-    }
-})
-
-websiteRouter.post('/upload-image', parser.single('image'),  async (req: IUserRequest, res: Response, next: NextFunction) => {
-    // IMAGE UPLOAD TO CLOUDINARY
-    try {
-        if (!req.file?.path) return next(createHttpError(400, 'File Not Uploaded'))
-        res.status(201).send(req.file.path)
-    } catch (error) {
-        console.log(error)
     }
 })
 
@@ -141,8 +130,9 @@ websiteRouter.route('/:websiteName/:websitePage/:websiteStage/publish')
             const newWebsite = new WebsiteModel({ owner: req.user?._id, name, page, stage, code })
             await newWebsite.save()
             res.status(201).send(newWebsite)
+        } else { 
+            res.send(website)
         }
-        res.send(website)
     } catch (error) {
         next(error)
     }
