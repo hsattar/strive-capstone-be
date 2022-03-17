@@ -20,10 +20,11 @@ websiteRouter.route('/')
 })
 .post(createWebsiteValidation, async (req: IUserRequest, res: Response, next: NextFunction) => {
     // ADD NEW WEBSITE
+    // TODO: IF ANY OF THESE STEPES FAIL I SHOULD REMOVE THE PREVIOUS STEPS
     try {
         checkValidationErrors(req)
-        const website = new WebsiteModel({ ...req.body, owner: req.user?._id })
-        await website.save()
+        const website = await new WebsiteModel({ ...req.body, owner: req.user?._id }).save()
+        if (!website) return next(createHttpError(400, 'Website Not Created'))
         const user = await UserModel.findById(req.user?._id)
         user?.websites.push(website._id)
         await user!.save()

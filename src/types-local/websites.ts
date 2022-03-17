@@ -9,6 +9,7 @@ export interface IWebsite {
     namePageStage: string
     code: string
     codeBlocks: ICodeBlock
+    images: string[]
     createdAt: Date
     updatedAt: Date
 }

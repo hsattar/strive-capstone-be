@@ -36,7 +36,8 @@ const WebsiteSchema = new Schema<IWebsite>({
     stage: { type: String, enum: ['development', 'production'], required: true },
     namePageStage: { type: String, default: function() { return `${this.name}${this.page}${this.stage}` }, unique: true },
     code: { type: String, default: `` },
-    codeBlocks: [codeBlocksSchema]
+    codeBlocks: [codeBlocksSchema],
+    images: [String]
 }, { timestamps: true })
 
 const WebsiteModel = model<IWebsite>('Website', WebsiteSchema)
