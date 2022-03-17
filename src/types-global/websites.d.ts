@@ -5,8 +5,8 @@ interface ICodeBlock {
 }
 
 interface IElement {
-    name: string
     id?: string
+    name: string
     tag: string
     className: string
     height?: string
@@ -18,10 +18,18 @@ interface IElement {
     underline?: string
     alignment?: string
     color?: string
-    backgroundColor?: string
-    margin?: string
-    padding?: string
+    bgColor?: string
+    marginT?: string
+    marginR?: string
+    marginB?: string
+    marginL?: string
+    paddingT?: string
+    paddingR?: string
+    paddingB?: string
+    paddingL?: string
     border?: string 
     borderRadius?: string 
     text?: string
+    listStyle?: string
+    hoverBorder?: string
 }

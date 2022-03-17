@@ -36,8 +36,19 @@ imageRouter.get('/:websiteName/images', async (req: IUserRequest, res: Response,
     }
 })
 
+imageRouter.post('/unsplash/downloadImage', async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // PROXY ROUTE TO HIDE API KEY WHEN SEARCHING FOR IMAGES
+    try {
+        const { downloadUrl: url } = req.body
+        const { data } = await axios.get(url, { params: { client_id } })
+        res.send(data)
+    } catch (error) {
+        next(error)
+    }
+})
+
 imageRouter.get('/unsplash/:query/:page/:per_page', async (req: IUserRequest, res: Response, next: NextFunction) => {
-    // PROXY ROUTE TO HIDE API KEY
+    // PROXY ROUTE TO HIDE API KEY WHEN DOWNLOADING AN IMAGE
     try {
         const { query, page, per_page } = req.params
         const { data } = await axios.get(URL, { params: { query, page, per_page, client_id } })

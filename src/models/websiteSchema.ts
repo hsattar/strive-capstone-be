@@ -15,12 +15,20 @@ const elementSchema = new Schema<IElement>({
     underline: String,
     alignment: String,
     color: String,
-    backgroundColor: String,
-    margin: String,
-    padding: String,
+    bgColor: String,
+    marginT: String,
+    marginR: String,
+    marginB: String,
+    marginL: String,
+    paddingT: String,
+    paddingR: String,
+    paddingB: String,
+    paddingL: String,
     border: String,
     borderRadius: String,
     text: String,
+    listStyle: String,
+    hoverBorder: String,
 })
 
 const codeBlocksSchema = new Schema<ICodeBlock>({
