@@ -7,6 +7,8 @@ export interface IWebsite {
     page: string
     stage: 'devlopment' | 'production'
     namePageStage: string
+    title: string
+    description: string
     code: string
     codeBlocks: ICodeBlock
     images: string[]

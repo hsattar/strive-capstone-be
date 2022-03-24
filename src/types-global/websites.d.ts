@@ -1,13 +1,15 @@
 interface ICodeBlock {
     id: string
     name: string
+    type: string
     code: IElement[]
 }
 
 interface IElement {
     id?: string
+    type: string
     name: string
-    tag: string
+    tag?: string
     className: string
     height?: string
     width?: string
@@ -27,9 +29,17 @@ interface IElement {
     paddingR?: string
     paddingB?: string
     paddingL?: string
-    border?: string 
-    borderRadius?: string 
+    borderStyle?: string
+    borderColor?: string
+    borderWidth?: string
+    borderRadius?: string
     text?: string
     listStyle?: string
+    display?: string
+    flexDirection?: string
+    flexItems?: string
+    flexJustify?: string
+    linkTo?: string
+    linkType?: string
     hoverBorder?: string
 }

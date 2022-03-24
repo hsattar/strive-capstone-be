@@ -64,6 +64,17 @@ websiteRouter.route('/:websiteName')
 })
 
 websiteRouter.route('/:websiteName/:websitePage')
+.put(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    try {
+        const { websiteName: name, websitePage: page } = req.params
+        const { title, description } =req.body
+        const stages = ['development', 'production']
+        stages.map(async stage => await WebsiteModel.findOneAndUpdate({ name, page, stage, owner: req.user?._id }, { title, description }))
+        res.send('Updated')
+    } catch (error) {
+        next(error)
+    }
+})
 .delete(async (req: IUserRequest, res: Response, next: NextFunction) => {
     // DELETE A SPECIFIC WEBSITE PAGE FROM BOTH DEV & PRODUCTION
     try {
@@ -75,6 +86,35 @@ websiteRouter.route('/:websiteName/:websitePage')
             await UserModel.findByIdAndUpdate(req.user?._id, { $pull: { websites: website._id } })
         })
         res.status(204).send()
+    } catch (error) {
+        next(error)
+    }
+})
+
+websiteRouter.route('/:websiteName/:websitePage/details')
+.get(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // SEND THE TITLE AND DESCRIPTION FOR THIS PAGE
+    try {
+        const { websiteName: name, websitePage: page } = req.params
+        const websites = await WebsiteModel.find({ name, page, stage: 'development', owner: req.user?._id }, { title: 1, description: 1, _id: 0 })
+        if (websites.length === 0) return next(createHttpError(404, `Couldn't find the website`))
+        res.send({ title: websites[0].title, description: websites[0].description })
+    } catch (error) {
+        next(error)
+    }
+})
+
+websiteRouter.route('/:websiteName/:websitePage/update-details')
+.put(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // UPDATE THE WEBSITE TITLE AND DESCRIPTION FOR THIS PAGE
+    try {
+        const { websiteName: name, websitePage: page } = req.params
+        const { title, description } = req.body
+        const websiteDev = await WebsiteModel.findOneAndUpdate({ name, page, stage: 'development', owner: req.user?._id }, { title, description }, { new: true })
+        if (!websiteDev) return next(createHttpError(404, `Couldn't find the website`))
+        const websiteProduction = await WebsiteModel.findOneAndUpdate({ name, page, stage: 'production', owner: req.user?._id }, { title, description }, { new: true })
+        if (!websiteProduction) return next(createHttpError(404, `Couldn't find the website`))
+        res.send(websiteDev)
     } catch (error) {
         next(error)
     }
