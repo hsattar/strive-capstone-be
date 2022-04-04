@@ -39,6 +39,8 @@ interface IElement {
     flexDirection?: string
     flexItems?: string
     flexJustify?: string
+    gridCols?: string
+    gridGap?: string
     linkTo?: string
     linkType?: string
     hoverBorder?: string

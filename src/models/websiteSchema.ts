@@ -35,6 +35,8 @@ const elementSchema = new Schema<IElement>({
     flexDirection: String,
     flexItems: String,
     flexJustify: String,
+    gridCols: String,
+    gridGap: String,
     linkTo: String,
     linkType: String,
     hoverBorder: String,
