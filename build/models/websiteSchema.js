@@ -35,6 +35,8 @@ const elementSchema = new mongoose_1.Schema({
     flexDirection: String,
     flexItems: String,
     flexJustify: String,
+    gridCols: String,
+    gridGap: String,
     linkTo: String,
     linkType: String,
     hoverBorder: String,
