@@ -1,3 +1,4 @@
+import axios from 'axios'
 import { NextFunction, Response, Router } from 'express'
 import createHttpError from 'http-errors'
 import { checkValidationErrors } from '../middleware/errorHandlers'
@@ -7,6 +8,9 @@ import WebsiteModel from '../models/websiteSchema'
 import { IUserRequest } from '../types-local/users'
 
 const websiteRouter = Router()
+
+const { APIFLASH_BASE_URL: URL, APIFLASH_API_KEY: access_key } = process.env
+if (!URL || !access_key) throw new Error('ADD ENV VARIABLES')
 
 websiteRouter.route('/')
 .get(async (req: IUserRequest, res: Response, next: NextFunction) => {
@@ -29,6 +33,22 @@ websiteRouter.route('/')
         user?.websites.push(website._id)
         await user!.save()
         res.status(201).send(website)
+    } catch (error) {
+        next(error)
+    }
+})
+
+websiteRouter.route('/thumbnail/:websiteName')
+.get(async (req: IUserRequest, res: Response, next: NextFunction) => {
+    // GET THE WEBSITE IMAGE FOR THE THUMBNAIL - ACTING AS PROXY
+    try {
+        const { websiteName: name } = req.params
+        // const url = `https%3A%2F%2Fcode-buddy-vercel.app%2Fws%2F${name}/home`
+        // const url = `https%3A%2F%2Fcode-buddy.vercel.app%2Flogin`
+        // const { data } = await axios.get(URL, { params: { url, access_key } })
+        const fullUrl = `https://api.apiflash.com/v1/urltoimage?access_key=${access_key}&url=https%3A%2F%2Fcode-buddy.vercel.app%2Flogin&response_type=json`
+        const { data } = await axios.get(fullUrl)
+        res.send(data)
     } catch (error) {
         next(error)
     }

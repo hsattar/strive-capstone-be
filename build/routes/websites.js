@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const axios_1 = __importDefault(require("axios"));
 const express_1 = require("express");
 const http_errors_1 = __importDefault(require("http-errors"));
 const errorHandlers_1 = require("../middleware/errorHandlers");
@@ -19,6 +20,9 @@ const websiteValidation_1 = require("../middleware/websiteValidation");
 const UserSchema_1 = __importDefault(require("../models/UserSchema"));
 const websiteSchema_1 = __importDefault(require("../models/websiteSchema"));
 const websiteRouter = (0, express_1.Router)();
+const { APIFLASH_BASE_URL: URL, APIFLASH_API_KEY: access_key } = process.env;
+if (!URL || !access_key)
+    throw new Error('ADD ENV VARIABLES');
 websiteRouter.route('/')
     .get((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -44,6 +48,22 @@ websiteRouter.route('/')
         user === null || user === void 0 ? void 0 : user.websites.push(website._id);
         yield user.save();
         res.status(201).send(website);
+    }
+    catch (error) {
+        next(error);
+    }
+}));
+websiteRouter.route('/thumbnail/:websiteName')
+    .get((req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    // GET THE WEBSITE IMAGE FOR THE THUMBNAIL - ACTING AS PROXY
+    try {
+        const { websiteName: name } = req.params;
+        // const url = `https%3A%2F%2Fcode-buddy-vercel.app%2Fws%2F${name}/home`
+        // const url = `https%3A%2F%2Fcode-buddy.vercel.app%2Flogin`
+        // const { data } = await axios.get(URL, { params: { url, access_key } })
+        const fullUrl = `https://api.apiflash.com/v1/urltoimage?access_key=${access_key}&url=https%3A%2F%2Fcode-buddy.vercel.app%2Flogin&response_type=json`;
+        const { data } = yield axios_1.default.get(fullUrl);
+        res.send(data);
     }
     catch (error) {
         next(error);
