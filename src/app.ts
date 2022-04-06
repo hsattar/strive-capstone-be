@@ -14,7 +14,7 @@ const app = express()
 const { DB_CONNECTION, PORT } = process.env
 if (!DB_CONNECTION || !PORT) throw new Error('DB CONNECTION & PORT REQUIRED')
 
-const whitelist = ['http://localhost:3000', 'https://code-buddy.vercel.app']
+const whitelist = ['http://localhost:3000']
 
 const corsOptions = {
   origin: function (origin: any, callback: any) {
